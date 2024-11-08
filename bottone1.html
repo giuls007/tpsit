@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bottoni stilizzati</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        .btn-classic {
+            padding: 15px 30px;
+            background-color: #ffb0e7;
+            color: rgb(3, 3, 3);
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-classic:hover {
+            background-color: #ff85ef;
+        }
+        .btn-oval {
+            padding: 12px 30px;
+            background-color: #72dcff;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-oval:hover {
+            background-color: #2bbcff;
+        }
+
+        .btn-round {
+            padding: 10px 30px;
+            background-color: #90ff90;
+            color: rgb(0, 0, 0);
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-round:hover {
+            background-color: #52ff60;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Seleziona una bottone:</h2>
+
+    <!-- Bottoni -->
+    <button class="btn-classic" onclick="showAlert1()">CLICCAMI</button>
+    <button class="btn-oval" onclick="showAlert2()">CLICCAMI</button>
+    <button class="btn-round" onclick="showAlert3()">CLICCAMI</button>
+
+    <script>
+        // Funzione per il primo alert
+        function showAlert1() {
+            alert("forza juve!");
+        }
+
+        // Funzione per il secondo alert
+        function showAlert2() {
+            alert("CIAO!");
+        }
+
+        // Funzione per il terzo alert
+        function showAlert3() {
+            alert("HEY!");
+        }
+    </script>
+
+</body>
+</html>
