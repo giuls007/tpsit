@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aforismi di Scienziati</title>
+</head>
+<body>
+    <h2>Aforismi Scienziati</h2>
+
+    <!-- Aforismi con pulsanti per nasconderli -->
+    <div id="aforismo1">
+        <p>"La scienza è un modo di pensare molto più che un corpo di conoscenze."</p>
+        <button onclick="nascondiTesto('aforismo1')">Nascondi</button>
+    </div>
+
+    <div id="aforismo2">
+        <p>"La misura dell'intelligenza è data dalla capacità di cambiare."</p>
+        <button onclick="nascondiTesto('aforismo2')">Nascondi</button>
+    </div>
+
+    <div id="aforismo3">
+        <p>"La scienza non è altro che una perversione di se stessa a meno che non abbia come fine ultimo il miglioramento dell'umanità."</p>
+        <button onclick="nascondiTesto('aforismo3')">Nascondi</button>
+    </div>
+
+    <div id="aforismo4">
+        <p>"La curiosità è una delle caratteristiche più permanenti e sicure di una mente vigorosa."</p>
+        <button onclick="nascondiTesto('aforismo4')">Nascondi</button>
+    </div>
+
+    <div id="aforismo5">
+        <p>"La scienza non ha patria, perché la conoscenza appartiene all'umanità."</p>
+        <button onclick="nascondiTesto('aforismo5')">Nascondi</button>
+    </div>
+
+    <script>
+        // Funzione per nascondere il testo di un aforisma specifico
+        function nascondiTesto(id) {
+            const aforismo = document.getElementById(id);
+            aforismo.style.display = "none"; 
+        }
+    </script>
+</body>
+</html>
