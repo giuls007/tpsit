@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alert Input</title>
+</head>
+<body>
+    <h2>Inserisci un testo</h2>
+    <input type="text" id="userInput" placeholder="Scrivi qualcosa...">
+    <button onclick="showAlert()">mostra testo</button>
+
+    <script>
+        function showAlert() {
+            var inputText = document.getElementById("userInput").value;
+            alert("Hai inserito: " + inputText);
+        }
+    </script>
+</body>
+</html>
