@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcola la Media dei Voti</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #ff0000;
+        }
+        label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        input[type="number"] {
+            padding: 10px;
+            margin: 10px;
+            width: 150px;
+            border-radius: 4px;
+            border: 1px solid #000000;
+        }
+        .result {
+            font-size: 20px;
+            margin-top: 20px;
+            color: #000000;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            color: rgb(0, 0, 0);
+            cursor: pointer;
+            border-radius: 4px;
+            background-color: #4CAF50;
+        }
+        .button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calcola la Media dei Voti</h1>
+    
+    <!-- Inserisci il tuo nome -->
+    <label for="nome">Inserisci il tuo nome:</label>
+    <input type="text" id="nome"><br><br>
+    
+    <!-- Inserisci i 5 voti -->
+    <label for="voto1">Voto 1:</label>
+    <input type="number" id="voto1"><br><br>
+    <label for="voto2">Voto 2:</label>
+    <input type="number" id="voto2"><br><br>
+    <label for="voto3">Voto 3:</label>
+    <input type="number" id="voto3"><br><br>
+    <label for="voto4">Voto 4:</label>
+    <input type="number" id="voto4"><br><br>
+    <label for="voto5">Voto 5:</label>
+    <input type="number" id="voto5"><br><br>
+
+    <!-- Bottone per calcolare la media -->
+    <button class="button" onclick="calcolaMedia()">Calcola la Media</button>
+
+    <!-- Risultato -->
+    <div class="result" id="media"></div>
+</div>
+
+<script>
+    function calcolaMedia() {
+        // Ottieni i valori del nome e dei voti
+        var nome = document.getElementById('nome').value;
+        var voto1 = parseInt(document.getElementById('voto1').value);
+        var voto2 = parseInt(document.getElementById('voto2').value);
+        var voto3 = parseInt(document.getElementById('voto3').value);
+        var voto4 = parseInt(document.getElementById('voto4').value);
+        var voto5 = parseInt(document.getElementById('voto5').value);
+
+        // Verifica che tutti i campi siano stati riempiti
+        if (nome === "" || isNaN(voto1) || isNaN(voto2) || isNaN(voto3) || isNaN(voto4) || isNaN(voto5)) {
+            alert('Per favore, inserisci il tuo nome e tutti i voti correttamente.');
+            return;
+        }
+
+        // Calcolo della media dei voti
+        var media = (voto1 + voto2 + voto3 + voto4 + voto5) / 5;
+
+        // Visualizza il risultato
+        document.getElementById('media').innerText = nome + ', la tua media è: ' + media.toFixed(2);
+    }
+</script>
+
+</body>
+</html>
