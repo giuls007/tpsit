@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Dislivello Trekking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background-color: rgb(159, 220, 255);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #3c19ff;
+        }
+        label {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        input[type="number"] {
+            padding: 10px;
+            margin: 10px;
+            width: 150px;
+            border-radius: 4px;
+            border: 1px solid #0083cf;
+        }
+        .result {
+            font-size: 20px;
+            margin-top: 20px;
+            color: #000000;
+        }
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            color: rgb(0, 0, 0);
+            cursor: pointer;
+            border-radius: 4px;
+            background-image: <img src="monviso.jpg" alt="monviso">
+            background-size: cover;
+            background-position: center;
+            text-align: center;
+        }
+        .button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calcola il Dislivello del Tuo Trekking</h1>
+    <label for="partenza">Altezza punto di partenza (m):</label>
+    <input type="number" id="partenza"><br>
+    <label for="pausa">Altezza punto di pausa (m):</label>
+    <input type="number" id="pausa"><br>
+    <label for="arrivo">Altezza punto di arrivo (m):</label>
+    <input type="number" id="arrivo"><br>
+    
+    <button class="button" onclick="calcolaDislivello()">Calcola Dislivello</button>
+
+    <div class="result" id="dislivello"></div>
+</div>
+
+<script>
+    function calcolaDislivello() {
+        
+        var partenza = parseInt(document.getElementById('partenza').value);
+        var pausa = parseInt(document.getElementById('pausa').value);
+        var arrivo = parseInt(document.getElementById('arrivo').value);
+        
+        if (isNaN(partenza) || isNaN(pausa) || isNaN(arrivo)) {
+            alert('Per favore, inserisci tutti i valori correttamente.');
+            return;
+        }
+
+        
+        var dislivello = Math.abs(arrivo - partenza) + Math.abs(pausa - partenza) + Math.abs(arrivo - pausa);
+
+        document.getElementById('dislivello').innerText = 'Dislivello totale: ' + dislivello + ' metri';
+    }
+</script>
+
+</body>
+</html>
