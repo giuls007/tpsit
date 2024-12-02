@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morra array1</title>
+</head>
+<body>
+    <h1>MORRA 3a-BoT</h1>
+    <p id="out1"></p>
+    <p> Morra bot tira: </p>
+    <button onclick="TiroMorraBot()">START TIRO</button>
+    <p id="out2"></p>
+
+    <script>
+        let numeroCasuale = 0;
+
+        function TiroMorraBot() {
+            numeroCasuale = Math.floor(Math.random() * 3);
+
+            let morraArray = ["sasso", "carta", "forbice"];
+
+            document.getElementById("out1").innerHTML = "Choices available: " + morraArray.join(", ");
+
+            document.getElementById("out2").innerHTML = "bot tira: " + morraArray[numeroCasuale];
+        }
+    </script>
+</body>
+</html>
