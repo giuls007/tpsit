@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numeri Primi</title>
+    <style>
+        .prime {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="out-1"></div>
+    
+    <script>
+        // Funzione per verificare se un numero è primo
+        function isPrime(num) {
+            if (num <= 1) return false;
+            for (let i = 2; i <= Math.sqrt(num); i++) {
+                if (num % i === 0) return false;
+            }
+            return true;
+        }
+
+        // Funzione per stampare l'array e colorare i numeri primi
+        function stampaArray(arr) {
+            let output = '';
+            for (let i = 0; i < arr.length; i++) {
+                if (isPrime(arr[i])) {
+                    output += `<p class="prime">${arr[i]}</p>`;
+                } else {
+                    output += `<p>${arr[i]}</p>`;
+                }
+            }
+            document.getElementById("out-1").innerHTML = output;
+        }
+
+        // Creazione dell'array di numeri da 1 a 1000
+        let numeri = [];
+        for (let i = 1; i <= 1000; i++) {
+            numeri.push(i);
+        }
+
+        // Chiamata della funzione per stampare l'array
+        stampaArray(numeri);
+    </script>
+</body>
+</html>
