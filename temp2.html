@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funzioni di analisi Numerica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .output {
+            font-size: 18px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-align: left;
+        }
+        .prime {
+            color: rgb(255, 0, 0);
+        }
+    </style>
+</head>
+<body>
+    <h1>Temporizzatori Numerici</h1>
+    <div class="output" id="output"></div>
+
+    <script>
+        function isPrime(num) {
+            if (num < 2) return false;
+            for (let i = 2; i <= Math.sqrt(num); i++) {
+                if (num % i === 0) return false;
+            }
+            return true;
+        }
+
+        function generateNumber() {
+            let output = '';
+            for (let number = 1; number <= 10000; number++) {
+                const isEven = number % 2 === 0 ? "Pari" : "Dispari";
+                const primeCheck = isPrime(number) ? "Primo" : "Non Primo";
+                const double = number * 2;
+                const half = Math.floor(number / 2);
+                const complement = 1000 - number;
+                const sumPrevNext = number - 1 + number + number + 1;
+                const multipliedByPi = (number * 3.14).toFixed(2);
+                const multipliedByIDK = (number * 2.71).toFixed(2);
+
+                const line = `Numero: ${number} | ${isEven} | ${primeCheck} | Doppio: ${double} | Metà: ${half} | Complemento: ${complement} | Somma: ${sumPrevNext} | x3.14: ${multipliedByPi} | x2.71: ${multipliedByIDK}\n`;
+
+                if (isPrime(number)) {
+                    output += `<span class="prime">${line}</span>`;
+                } else {
+                    output += line;
+                }
+            }
+            document.getElementById("output").innerHTML = output;
+        }
+
+        
+        generateNumber(); 
+    </script>
+</body>
+</html>
