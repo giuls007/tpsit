@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporizzatore Numerico</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            color: black
+        }
+        .output {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Temporizzatore Numerico</h1>
+    <div class="output" id="output"></div>
+    <script>
+        function isPrime(num) {
+            if (num < 2) return false;
+            for (let i = 2; i <= Math.sqrt(num); i++) {
+                if (num % i === 0) return false;
+            }
+            return true;
+        }
+        function generateNumber() {
+            const number = Math.floor(Math.random() * 1000) + 1; 
+            const isEven = number % 2 === 0 ? "Pari" : "Dispari";
+            const primeCheck = isPrime(number) ? "Primo" : "Non Primo";
+            const double = number * 2;
+            const half = Math.floor(number / 2);
+            const complement = 1000 - number;
+            const sumPrevNext = number - 1 + number + number + 1;
+            const multipliedByPi = (number * 3.14).toFixed(2);
+            document.getElementById("output").innerHTML = `
+                <p>Numero Generato: <strong>${number}</strong></p>
+                <p>${isEven}</p>
+                <p>${primeCheck}</p>
+                <p>Doppio: ${double}</p>
+                <p>Metà Intera: ${half}</p>
+                <p>Complemento (1000 - n): ${complement}</p>
+                <p>Somma Numero Precedente e Numero Successivo: ${sumPrevNext}</p>
+                <p>Moltiplicato per 3.14: ${multipliedByPi}</p>
+            `;
+        }
+        setInterval(generateNumber, 5000); 
+        generateNumber(); 
+    </script>
+</body>
+</html>
+
