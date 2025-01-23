@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap 5</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Bootstrap</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <section class="mb-5">
+            <h2 class="mb-4">Griglia Base</h2>
+            <div class="row">
+                <div class="col bg-primary text-white text-center py-3">Colonna 1</div>
+                <div class="col bg-secondary text-white text-center py-3">Colonna 2</div>
+                <div class="col bg-success text-white text-center py-3">Colonna 3</div>
+            </div>
+        </section>
+        <section class="mb-5">
+            <h2 class="mb-4">Griglia con Breakpoint</h2>
+            <div class="row">
+                <div class="col-sm-12 col-md-6 bg-warning text-center py-3">50% Larghezza su Desktop</div>
+                <div class="col-sm-12 col-md-6 bg-info text-center py-3">50% Larghezza su Desktop</div>
+            </div>
+        </section>
+
+        <section class="mb-5">
+            <h2 class="mb-4">Bottoni</h2>
+            <div>
+                <button class="btn btn-primary me-2">Primario</button>
+                <button class="btn btn-secondary">Secondario</button>
+            </div>
+        </section>
+
+        <section class="mb-5">
+            <h2 class="mb-4">Card</h2>
+            <div class="card" style="width: 18rem;">
+                <img src="bootstrap.png" class="card-img-top" alt="Immagine di esempio">
+                <div class="card-body">
+                    <h5 class="card-title">BOOTSTRAP</h5>
+                    <p class="card-text">Primo esercizio bootstrap</p>
+                    <a href="#" class="btn btn-primary">Vai</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
