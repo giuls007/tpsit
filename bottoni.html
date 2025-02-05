@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bottoni e Tempo</title>
+  <style>
+    button {
+      padding: 10px;
+      margin: 10px;
+    }
+    #output {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="button1">Bottone 1</button>
+  <button id="button2">Bottone 2</button>
+  <button id="button3">Bottone 3</button>
+  <button id="button4">Bottone 4</button>
+
+  <div id="output"></div>
+  <div id="timesOutput"></div>
+
+  <script>
+    let times = [];
+    let startTime = null;
+    function handleButtonClick() {
+      const now = new Date();
+      const dateTimeString = now.toLocaleString();
+      document.getElementById('output').innerHTML = `Data e Ora: ${dateTimeString}`;
+
+      if (startTime === null) {
+        startTime = now;
+      } else {
+
+        let elapsedTime = now - startTime; 
+        let seconds = (elapsedTime / 1000).toFixed(3); 
+        times.push(seconds);
+        console.log(`Tempo trascorso (in secondi): ${seconds}`);
+      }
+
+      document.getElementById('timesOutput').innerHTML = `Tempi in secondi: ${times.join(', ')}`;
+    }
+
+    document.getElementById('button1').addEventListener('click', handleButtonClick);
+    document.getElementById('button2').addEventListener('click', handleButtonClick);
+    document.getElementById('button3').addEventListener('click', handleButtonClick);
+    document.getElementById('button4').addEventListener('click', handleButtonClick);
+  </script>
+
+</body>
+</html>
