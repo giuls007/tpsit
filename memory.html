@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gioco Memory Sequenziale</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* Griglia 3x3 */
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .game-button {
+      width: 100px; /* Dimensione dei pulsanti */
+      height: 100px;
+      font-size: 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .active {
+      background-color: #00bfff; /* Colore azzurro per l'illuminazione */
+    }
+    .disabled {
+      pointer-events: none; /* Disabilita i pulsanti durante la sequenza */
+    }
+    .game-button:hover {
+      background-color: #f0a500;
+    }
+    #start-btn {
+      margin-top: 20px;
+    }
+    #score {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+  <div class="container text-center">
+    <h1 class="mt-5">Gioco Memory Sequenziale</h1>
+    <button id="start-btn" class="btn btn-primary mt-3">Inizia</button>
+    <div id="status" class="mt-3"></div>
+    <div id="score" class="mt-2">Punteggio: 0</div>
+
+    <!-- Griglia dei pulsanti -->
+    <div class="button-grid mt-4">
+      <button class="game-button btn btn-outline-secondary" data-id="0"></button>
+      <button class="game-button btn btn-outline-secondary" data-id="1"></button>
+      <button class="game-button btn btn-outline-secondary" data-id="2"></button>
+      <button class="game-button btn btn-outline-secondary" data-id="3"></button>
+      <button class="game-button btn btn-outline-secondary" data-id="4"></button>
+      <button class="game-button btn btn-outline-secondary" data-id="5"></button>
+      <button class="game-button btn btn-outline-secondary" data-id="6"></button>
+      <button class="game-button btn btn-outline-secondary" data-id="7"></button>
+      <button class="game-button btn btn-outline-secondary" data-id="8"></button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let sequence = []; // Sequenza dei pulsanti
+    let userSequence = []; // Sequenza dell'utente
+    let level = 0; // Livello del gioco
+    let gameStarted = false;
+
+    const buttons = document.querySelectorAll('.game-button');
+    const startBtn = document.getElementById('start-btn');
+    const statusDisplay = document.getElementById('status');
+    const scoreDisplay = document.getElementById('score');
+
+    // Aggiungi evento di click ai pulsanti
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (gameStarted && !button.classList.contains('disabled')) {
+          const buttonId = button.getAttribute('data-id');
+          userSequence.push(parseInt(buttonId));
+
+          // Aggiungi il pulsante alla sequenza dell'utente
+          button.classList.add('active');
+
+          // Verifica se la sequenza è corretta
+          setTimeout(() => {
+            button.classList.remove('active');
+            if (userSequence.length === sequence.length) {
+              checkSequence();
+            }
+          }, 300);
+        }
+      });
+    });
+
+    // Funzione per iniziare il gioco
+    startBtn.addEventListener('click', startGame);
+
+    // Avvia un nuovo gioco
+    function startGame() {
+      level = 1;
+      sequence = [];
+      userSequence = [];
+      gameStarted = true;
+      statusDisplay.textContent = `Livello ${level}`;
+      scoreDisplay.textContent = 'Punteggio: 0';
+      startBtn.disabled = true;
+      nextTurn();
+    }
+
+    // Avanza al prossimo turno
+    function nextTurn() {
+      userSequence = [];
+      disableButtons();
+      const randomButton = Math.floor(Math.random() * buttons.length);
+      sequence.push(randomButton);
+
+      // Mostra la sequenza
+      showSequence();
+    }
+
+    // Mostra la sequenza sullo schermo
+    function showSequence() {
+      let index = 0;
+      const interval = setInterval(() => {
+        if (index === sequence.length) {
+          clearInterval(interval);
+          enableButtons();
+        } else {
+          const buttonId = sequence[index];
+          const button = buttons[buttonId];
+          button.classList.add('active'); // Colora il pulsante in azzurro
+          setTimeout(() => {
+            button.classList.remove('active'); // Rimuovi il colore dopo un po'
+          }, 500); // Tempo che il pulsante rimane attivo (illuminato)
+          index++;
+        }
+      }, 1000); // Intervallo di tempo tra i pulsanti della sequenza
+    }
+
+    // Disabilita i pulsanti durante la sequenza
+    function disableButtons() {
+      buttons.forEach(button => {
+        button.classList.add('disabled');
+      });
+    }
+
+    // Abilita i pulsanti dopo la sequenza
+    function enableButtons() {
+      buttons.forEach(button => {
+        button.classList.remove('disabled');
+      });
+    }
+
+    // Controlla se la sequenza dell'utente è corretta
+    function checkSequence() {
+      const lastButton = userSequence[userSequence.length - 1];
+      if (lastButton === sequence[userSequence.length - 1]) {
+        if (userSequence.length === sequence.length) {
+          level++;
+          scoreDisplay.textContent = `Punteggio: ${level}`;
+          setTimeout(nextTurn, 1000); // Passa al prossimo livello
+        }
+      } else {
+        // Errore, resetta il gioco
+        statusDisplay.textContent = 'Hai sbagliato! Gioco finito!';
+        gameStarted = false;
+        startBtn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
