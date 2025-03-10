@@ -1,121 +1,120 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> <!-- Definisce il tipo di documento come HTML -->
+<html lang="en"> <!-- Imposta la lingua della pagina come inglese -->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memory Sequenziale</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <meta charset="UTF-8"> <!-- Imposta il set di caratteri come UTF-8 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Rende la pagina responsiva per dispositivi mobili -->
+    <title>Memory Sequenziale</title> <!-- Titolo della pagina che appare nella barra del browser -->
+    <link href="css/bootstrap.min.css" rel="stylesheet"> <!-- Link al foglio di stile Bootstrap per la progettazione responsiva -->
+    <link href="css/style.css" rel="stylesheet"> <!-- Link al foglio di stile personalizzato -->
     <style>
         body {
-            background: linear-gradient(#ffffff);
-            font-family: verdana;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background: linear-gradient(#ffffff); /* Imposta uno sfondo con colore bianco */
+            font-family: verdana; /* Imposta il font a Verdana */
+            display: flex; /* Usa il layout flexbox per il corpo della pagina */
+            justify-content: center; /* Centra orizzontalmente gli elementi */
+            align-items: center; /* Centra verticalmente gli elementi */
+            height: 100vh; /* Imposta l'altezza del corpo alla dimensione della finestra */
         }
         .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            width: 270px;
-            margin: 20px auto;
+            display: grid; /* Imposta il layout della griglia */
+            grid-template-columns: repeat(3, 1fr); /* Crea 3 colonne di larghezza uguale */
+            gap: 8px; /* Imposta uno spazio di 8px tra gli elementi della griglia */
+            width: 270px; /* Imposta la larghezza totale della griglia */
+            margin: 20px auto; /* Imposta il margine sopra e sotto e centra la griglia */
         }
         .grid button {
-            width: 80px;
-            height: 80px;
-            font-size: 24px;
-            border-radius: 10px;
+            width: 80px; /* Imposta la larghezza dei pulsanti nella griglia */
+            height: 80px; /* Imposta l'altezza dei pulsanti nella griglia */
+            font-size: 24px; /* Imposta la dimensione del testo nei pulsanti */
+            border-radius: 10px; /* Applica gli angoli arrotondati ai pulsanti */
         }
         .active {
-            background-color: #ffbdfc;
-            box-shadow: 0 0 15px rgba(255, 92, 247, 0.8);
+            background-color: #ffbdfc; /* Colore di sfondo quando il pulsante è attivo */
+            box-shadow: 0 0 15px rgba(255, 92, 247, 0.8); /* Aggiunge un'ombra luminosa al pulsante attivo */
         }
-    </style>
+    </style> <!-- Fine del CSS -->
 </head>
 <body>
-    <div class="container text-center">
-        <h1>Memory Sequenziale</h1>
-        <button id="start-btn" class="btn btn-warning mb-3">Inizia Gioco</button>
-        <div id="score" class="mb-3">Punteggio: 0</div>
-        <div id="game-message" class="mb-3"></div>
-        <div id="grid" class="grid"></div>
+    <div class="container text-center"> <!-- Contenitore che centra il testo e gli elementi -->
+        <h1>Memory Sequenziale</h1> <!-- Titolo del gioco -->
+        <button id="start-btn" class="btn btn-warning mb-3">Inizia Gioco</button> <!-- Pulsante per iniziare il gioco -->
+        <div id="score" class="mb-3">Punteggio: 0</div> <!-- Visualizzazione del punteggio -->
+        <div id="game-message" class="mb-3"></div> <!-- Messaggio di stato del gioco -->
+        <div id="grid" class="grid"></div> <!-- Contenitore della griglia di pulsanti -->
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const grid = document.getElementById('grid');
-            const startButton = document.getElementById('start-btn');
-            const scoreDisplay = document.getElementById('score');
-            const gameMessage = document.getElementById('game-message');
-            const gridSize = 3;
-            let sequence = [], userInput = [], score = 0, gameActive = false;
+    <script> <!-- Inizio del codice JavaScript -->
+        document.addEventListener('DOMContentLoaded', () => { /* Esegui il codice quando il DOM è completamente caricato */
+            const grid = document.getElementById('grid'); /* Riferimento alla griglia */
+            const startButton = document.getElementById('start-btn'); /* Riferimento al pulsante per avviare il gioco */
+            const scoreDisplay = document.getElementById('score'); /* Riferimento alla visualizzazione del punteggio */
+            const gameMessage = document.getElementById('game-message'); /* Riferimento al messaggio di stato */
+            const gridSize = 3; /* Imposta la dimensione della griglia come 3x3 */
+            let sequence = [], userInput = [], score = 0, gameActive = false; /* Variabili per la sequenza, l'input utente, il punteggio e lo stato del gioco */
 
-            function createGrid() {
-                grid.innerHTML = '';
-                for (let i = 0; i < gridSize * gridSize; i++) {
-                    const button = document.createElement('button');
-                    button.classList.add('btn', 'btn-light');
-                    button.dataset.index = i;
-                    button.addEventListener('click', handleUserClick);
-                    grid.appendChild(button);
+            function createGrid() { /* Funzione per creare la griglia di pulsanti */
+                grid.innerHTML = ''; /* Svuota la griglia prima di crearla */
+                for (let i = 0; i < gridSize * gridSize; i++) { /* Crea 9 pulsanti per la griglia */
+                    const button = document.createElement('button'); /* Crea un pulsante */
+                    button.classList.add('btn', 'btn-light'); /* Aggiunge le classi Bootstrap per lo stile */
+                    button.dataset.index = i; /* Aggiunge un attributo per memorizzare l'indice del pulsante */
+                    button.addEventListener('click', handleUserClick); /* Aggiunge un listener per il click sul pulsante */
+                    grid.appendChild(button); /* Aggiunge il pulsante alla griglia */
                 }
             }
 
-            function startGame() {
-                score = 0;
-                sequence = [];
-                userInput = [];
-                gameMessage.textContent = '';
-                scoreDisplay.textContent = `Punteggio: ${score}`;
-                gameActive = true;
-                nextTurn();
+            function startGame() { /* Funzione per iniziare un nuovo gioco */
+                score = 0; /* Resetta il punteggio */
+                sequence = []; /* Resetta la sequenza */
+                userInput = []; /* Resetta l'input dell'utente */
+                gameMessage.textContent = ''; /* Pulisce il messaggio di stato */
+                scoreDisplay.textContent = `Punteggio: ${score}`; /* Aggiorna il punteggio visualizzato */
+                gameActive = true; /* Imposta lo stato del gioco come attivo */
+                nextTurn(); /* Inizia il prossimo turno */
             }
 
-            function nextTurn() {
-                userInput = [];
-                sequence.push(Math.floor(Math.random() * gridSize * gridSize));
-                playSequence();
+            function nextTurn() { /* Funzione per passare al prossimo turno */
+                userInput = []; /* Resetta l'input dell'utente */
+                sequence.push(Math.floor(Math.random() * gridSize * gridSize)); /* Aggiunge un nuovo numero casuale alla sequenza */
+                playSequence(); /* Esegui la sequenza per l'utente */
             }
 
-            function playSequence() {
-                let i = 0;
-                const interval = setInterval(() => {
-                    const button = grid.children[sequence[i]];
-                    button.classList.add('active');
-                    setTimeout(() => button.classList.remove('active'), 500);
-                    i++;
-                    if (i === sequence.length) clearInterval(interval);
-                }, 1000);
+            function playSequence() { /* Funzione per eseguire la sequenza di pulsanti */
+                let i = 0; 
+                const interval = setInterval(() => { /* Imposta un intervallo per mostrare la sequenza */
+                    const button = grid.children[sequence[i]]; /* Trova il pulsante corrispondente alla sequenza */
+                    button.classList.add('active'); /* Aggiunge la classe 'active' per evidenziare il pulsante */
+                    setTimeout(() => button.classList.remove('active'), 500); /* Rimuove la classe dopo 500ms */
+                    i++; /* Passa al prossimo elemento della sequenza */
+                    if (i === sequence.length) clearInterval(interval); /* Quando la sequenza è finita, ferma l'intervallo */
+                }, 1000); /* Intervallo di 1 secondo per ogni pulsante */
             }
 
-            function handleUserClick(event) {
-                if (!gameActive) return;
-                const index = parseInt(event.target.dataset.index);
-                userInput.push(index);
-                event.target.classList.add('active');
-                setTimeout(() => event.target.classList.remove('active'), 500);
-                checkUserInput();
+            function handleUserClick(event) { /* Funzione per gestire il click dell'utente */
+                if (!gameActive) return; /* Se il gioco non è attivo, non fare nulla */
+                const index = parseInt(event.target.dataset.index); /* Ottieni l'indice del pulsante cliccato */
+                userInput.push(index); /* Aggiungi l'indice all'input dell'utente */
+                event.target.classList.add('active'); /* Aggiungi la classe 'active' al pulsante */
+                setTimeout(() => event.target.classList.remove('active'), 500); /* Rimuovi la classe dopo 500ms */
+                checkUserInput(); /* Controlla l'input dell'utente */
             }
 
-            function checkUserInput() {
-                if (userInput[userInput.length - 1] !== sequence[userInput.length - 1]) {
-                    gameMessage.textContent = 'Hai sbagliato!';
-                    gameActive = false;
-                    return;
+            function checkUserInput() { /* Funzione per verificare l'input dell'utente */
+                if (userInput[userInput.length - 1] !== sequence[userInput.length - 1]) { /* Se l'ultimo input non corrisponde alla sequenza */
+                    gameMessage.textContent = 'Hai sbagliato!'; /* Mostra il messaggio di errore */
+                    gameActive = false; /* Imposta il gioco come non attivo */
+                    return; /* Termina la funzione */
                 }
-                if (userInput.length === sequence.length) {
-                    scoreDisplay.textContent = `Punteggio: ${++score}`;
-                    setTimeout(nextTurn, 1000);
+                if (userInput.length === sequence.length) { /* Se l'utente ha cliccato tutti i pulsanti correttamente */
+                    scoreDisplay.textContent = `Punteggio: ${++score}`; /* Aumenta il punteggio */
+                    setTimeout(nextTurn, 1000); /* Passa al prossimo turno dopo 1 secondo */
                 }
             }
 
-            startButton.addEventListener('click', () => { if (!gameActive) startGame(); });
-            createGrid();
+            startButton.addEventListener('click', () => { if (!gameActive) startGame(); }); /* Avvia il gioco quando il pulsante viene cliccato */
+            createGrid(); /* Crea la griglia di pulsanti inizialmente */
         });
-    </script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script> 
-    <script src="js/bootstrap.min.js" ></script>
+    </script> <!-- Fine del codice JavaScript -->
+    <script src="js/bootstrap.min.js" ></script> <!-- Link al file JavaScript di Bootstrap -->
 </body>
 </html>
