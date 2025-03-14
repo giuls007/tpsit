@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inversione Stringa</title>
+    <script>
+        function invertiStringa() {
+            var inputA = document.getElementById('inputA').value;
+            var inputB = document.getElementById('inputB').value;
+            var invertitoA = inputA.split('').reverse().join('');
+            var invertitoB = inputB.split('').reverse().join('');
+            document.getElementById('risultatoA').innerText = "Stringa A al contrario: " + invertitoA;
+            document.getElementById('risultatoB').innerText = "Stringa B al contrario: " + invertitoB;
+            return false;
+        }
+    </script>
+</head>
+<body>
+    <h1>Inversione della Stringa</h1>
+    <form onsubmit="return invertiStringa();">
+        <label for="inputA">Stringa A:</label>
+        <input type="text" id="inputA" name="inputA"><br><br>
+        <label for="inputB">Stringa B:</label>
+        <input type="text" id="inputB" name="inputB"><br><br>
+
+        <input type="submit" value="Inverti Stringhe">
+    </form>
+
+    <div>
+        <p id="risultatoA"></p>
+        <p id="risultatoB"></p>
+    </div>
+</body>
+</html>
