@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unione delle Stringhe</title>
+    <script>
+        function unisciStringhe() {
+            var inputA = document.getElementById('inputA').value;
+            var inputB = document.getElementById('inputB').value;
+            var unione = inputA + " " + inputB;
+            document.getElementById('risultato').innerText = "Le stringhe unite sono: " + unione;
+            return false;
+        }
+    </script>
+</head>
+<body>
+    <h1>Unione delle Stringhe</h1>
+    <form onsubmit="return unisciStringhe();">
+        <label for="inputA">Stringa A:</label>
+        <input type="text" id="inputA" name="inputA"><br><br>
+        <label for="inputB">Stringa B:</label>
+        <input type="text" id="inputB" name="inputB"><br><br>
+
+        <input type="submit" value="Unisci Stringhe">
+    </form>
+
+    <div>
+        <p id="risultato"></p>
+    </div>
+</body>
+</html>
