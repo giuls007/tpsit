@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somma Lunghezze Stringhe</title>
+    <script>
+        function calcolaSommaLunghezze() {
+            var inputA = document.getElementById('inputA').value;
+            var inputB = document.getElementById('inputB').value;
+            var lunghezzaA = inputA.length;
+            var lunghezzaB = inputB.length;
+            var sommaLunghezze = lunghezzaA + lunghezzaB;
+            document.getElementById('somma').innerText = "Somma delle lunghezze: " + sommaLunghezze;
+            if (lunghezzaB > 20) {
+                document.getElementById('errore').innerText = "B troppo lunga!";
+            } else {
+                document.getElementById('errore').innerText = ""; 
+            }
+            return false;
+        }
+    </script>
+</head>
+<body>
+    <h1>Calcola Somma Lunghezze Stringhe</h1>
+    <form onsubmit="return calcolaSommaLunghezze();">
+        <label for="inputA">Stringa A:</label>
+        <input type="text" id="inputA" name="inputA"><br><br>
+        <label for="inputB">Stringa B:</label>
+        <input type="text" id="inputB" name="inputB"><br><br>
+
+        <input type="submit" value="Calcola Somma Lunghezze">
+    </form>
+
+    <div>
+        <p id="somma"></p>
+        <p id="errore" style="color: red;"></p>
+    </div>
+</body>
+</html>
