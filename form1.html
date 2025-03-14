@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Lunghezza Stringhe</title>
+    <script>
+        function calcolaLunghezza() {
+            var inputA = document.getElementById('inputA').value;
+            var inputB = document.getElementById('inputB').value;
+            var lunghezzaA = inputA.length;
+            var lunghezzaB = inputB.length;
+            document.getElementById('risultatoA').innerText = "Lunghezza della stringa A: " + lunghezzaA;
+            document.getElementById('risultatoB').innerText = "Lunghezza della stringa B: " + lunghezzaB;
+            return false;
+        }
+    </script>
+</head>
+<body>
+    <h1>Calcola Lunghezza delle Stringhe</h1>
+    <form onsubmit="return calcolaLunghezza();">
+        <label for="inputA">Stringa A:</label>
+        <input type="text" id="inputA" name="inputA"><br><br>
+        <label for="inputB">Stringa B:</label>
+        <input type="text" id="inputB" name="inputB"><br><br>
+
+        <input type="submit" value="Calcola Lunghezza">
+    </form>
+
+    <div>
+        <p id="risultatoA"></p>
+        <p id="risultatoB"></p>
+    </div>
+</body>
+</html>
+
