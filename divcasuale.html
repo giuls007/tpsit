@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Div Casuali</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(255, 255, 255);
+        }
+
+        .box {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+        }
+
+        .blue {
+            background-color: blue;
+        }
+
+        .yellow {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box blue"></div>
+    <div class="box yellow"></div>
+
+    <script>
+        function randomPosition(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        function checkOverlap(box1, box2) {
+            const rect1 = box1.getBoundingClientRect();
+            const rect2 = box2.getBoundingClientRect();
+            return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom);
+        }
+
+        function moveBoxes() {
+            const maxX = window.innerWidth - 100; 
+            const maxY = window.innerHeight - 100; 
+
+            const blueBox = document.querySelector('.blue');
+            const yellowBox = document.querySelector('.yellow');
+
+            blueBox.style.left = randomPosition(maxX) + 'px';
+            blueBox.style.top = randomPosition(maxY) + 'px';
+
+            yellowBox.style.left = randomPosition(maxX) + 'px';
+            yellowBox.style.top = randomPosition(maxY) + 'px';
+
+            if (checkOverlap(blueBox, yellowBox)) {
+                blueBox.style.backgroundColor = 'red';
+                yellowBox.style.backgroundColor = 'red';
+            } else {
+                blueBox.style.backgroundColor = 'blue';
+                yellowBox.style.backgroundColor = 'yellow';
+            }
+        }
+
+        setInterval(moveBoxes, 1500);
+    </script>
+
+</body>
+</html>
