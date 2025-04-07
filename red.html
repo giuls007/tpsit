@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scorrimento Quadrati</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: rgb(255, 254, 254);
+    }
+    #container {
+      display: flex;
+      gap: 10px;
+    }
+    .square {
+      width: 50px;
+      height: 50px;
+      background-color: yellow;
+    }
+    .red {
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+  </div>
+  <script>
+    let squares = document.querySelectorAll('.square');
+    let currentIndex = 0;
+
+    function moveSquares() {
+      if (currentIndex > 0) {
+        squares[currentIndex - 1].classList.remove('red');
+        squares[currentIndex - 1].classList.add('square');
+      }
+
+      squares[currentIndex].classList.add('red');
+      currentIndex++;
+
+      if (currentIndex >= squares.length) {
+        currentIndex = 0;
+      }
+    }
+
+    setInterval(moveSquares, 1000);
+  </script>
+</body>
+</html>
