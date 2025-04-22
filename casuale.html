@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Generatore Numeri Casuali</title>
+</head>
+<body>
+  <h1>Generatore di Numeri Casuali (ogni 500ms)</h1>
+  <button onclick="fermaGenerazione()">Ferma Generazione</button>
+  <pre id="output"></pre>
+
+  <script>
+    const intervallo = 500;
+    const L1 = 0;
+    const L2 = 1;
+    const ArrayNumeriCasuali = [];
+    const ArrayRapporti = [];
+    const outputEl = document.getElementById('output');
+
+    function generaCasuale() {
+      return Math.random() * (L2 - L1) + L1;
+    }
+
+    function calcolaMedia(array) {
+      const somma = array.reduce((acc, val) => acc + val, 0);
+      return somma / array.length;
+    }
+
+    function scriviOutput(testo) {
+      outputEl.textContent += testo + "\n";
+    }
+
+    const intervalloID = setInterval(() => {
+      const nuovoNumero = generaCasuale();
+      ArrayNumeriCasuali.push(nuovoNumero);
+      const i = ArrayNumeriCasuali.length - 1;
+
+      let rapporto = "N/A";
+      if (i > 0) {
+        rapporto = nuovoNumero / ArrayNumeriCasuali[i - 1];
+        ArrayRapporti.push(rapporto);
+      }
+
+      if (ArrayNumeriCasuali.length % 50 === 0) {
+        const ultimi50 = ArrayNumeriCasuali.slice(-50);
+        const media = calcolaMedia(ultimi50);
+        scriviOutput(`Media ultimi 50 numeri: ${media.toFixed(4)}`);
+      }
+
+      const centro = (L2 - L1) / 2;
+      const distanza = Math.abs(nuovoNumero - centro);
+
+      scriviOutput(`Numero: ${nuovoNumero.toFixed(4)} | ➗ Rapporto: ${typeof rapporto === 'number' ? rapporto.toFixed(4) : "N/A"} | 📏 Distanza dal centro: ${distanza.toFixed(4)}`);
+    }, intervallo);
+
+    function fermaGenerazione() {
+      clearInterval(intervalloID);
+      scriviOutput("Generazione fermata.");
+    }
+  </script>
+</body>
+</html>
