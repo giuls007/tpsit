@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Reazione al Pulsante</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #2c3e50;
+      --text: #dadddd;
+      --circle-color: #e74c3c;
+      --primary: #3498db;
+      --highlight: #70faff;
+      --shadow-light: rgba(255, 255, 255, 0.1);
+      --shadow-dark: rgba(0, 0, 0, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      overflow: hidden;
+    }
+
+    .container {
+      background: var(--bg);
+      padding: 40px;
+      border-radius: 30px;
+      box-shadow: 0 0 40px var(--shadow-dark);
+      text-align: center;
+      width: 100%;
+      max-width: 720px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      color: var(--highlight);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      animation: slideDown 1s ease-out;
+    }
+
+    @keyframes slideDown {
+      0% { transform: translateY(-50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    p {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    #playBtn {
+      padding: 15px 30px;
+      font-size: 22px;
+      background-color: var(--highlight);
+      border: none;
+      border-radius: 50px;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease-in-out;
+      transform: scale(1.1);
+      animation: pulseBtn 1.5s infinite alternate;
+    }
+
+    @keyframes pulseBtn {
+      0% { transform: scale(1.1); }
+      100% { transform: scale(1.05); }
+    }
+
+    #gameArea {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      background-color: #34495e;
+      margin-top: 30px;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .target-btn {
+      position: absolute;
+      width: 50px; 
+      height: 50px; 
+      border-radius: 50%;
+      background-color: var(--circle-color);
+      border: 5px solid #fff;
+      box-shadow: 0 0 15px var(--circle-color);
+      transition: transform 0.3s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      animation: bounceIn 0.5s ease-out;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .target-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px rgba(231, 76, 60, 0.8);
+    }
+
+    .target-btn:active {
+      animation: rippleEffect 0.4s ease-out;
+    }
+
+    @keyframes rippleEffect {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+
+    #results {
+      margin-top: 20px;
+      font-size: 1.2em;
+      color: #ecf0f1;
+    }
+
+    .end-game {
+      animation: fadeInEndGame 1s ease-in-out;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: var(--highlight);
+    }
+
+    @keyframes fadeInEndGame {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Reazione al Pulsante</h1>
+    <p><em>Clicca il cerchio rosso il più velocemente possibile!</em></p>
+
+    <button id="playBtn" onclick="startGame()">Inizia Gioco</button>
+
+    <div id="gameArea"></div>
+
+    <div id="results" class="hidden"></div>
+  </div>
+
+  <script>
+    let gameStarted = false;
+    let score = 0;
+    let reactionTimes = [];
+    let startTime = 0;
+    let targetBtn;
+    let gameTimer;
+
+    const gameArea = document.getElementById('gameArea');
+    const resultsDiv = document.getElementById('results');
+    const playBtn = document.getElementById('playBtn');
+
+    function randomPosition() {
+      const maxX = gameArea.offsetWidth - 50; 
+      const maxY = gameArea.offsetHeight - 50;
+      const randomX = Math.floor(Math.random() * maxX);
+      const randomY = Math.floor(Math.random() * maxY);
+      return { x: randomX, y: randomY };
+    }
+
+    function createTarget() {
+      const { x, y } = randomPosition();
+
+      targetBtn = document.createElement('button');
+      targetBtn.classList.add('target-btn');
+      targetBtn.style.left = `${x}px`;
+      targetBtn.style.top = `${y}px`;
+      targetBtn.onclick = targetClicked;
+
+      gameArea.appendChild(targetBtn);
+    }
+
+    function targetClicked() {
+      const endTime = Date.now();
+      const timeTaken = endTime - startTime;
+      reactionTimes.push(timeTaken);
+      score++;
+
+      gameArea.removeChild(targetBtn);
+      createTarget();
+
+      startTime = Date.now();
+    }
+
+    function startGame() {
+      gameStarted = true;
+      score = 0;
+      reactionTimes = [];
+      playBtn.style.display = "none";
+      createTarget();
+      startTime = Date.now();
+      gameTimer = setTimeout(endGame, 30000); 
+    }
+
+    function endGame() {
+      gameStarted = false;
+      if (targetBtn) {
+        gameArea.removeChild(targetBtn);
+      }
+
+      const totalTime = reactionTimes.reduce((a, b) => a + b, 0);
+      const avgTime = (totalTime / reactionTimes.length).toFixed(1);
+
+      resultsDiv.classList.remove('hidden');
+      resultsDiv.classList.add('end-game');
+      resultsDiv.innerHTML = `
+        <p><strong>Punteggio finale:</strong> ${score}</p>
+        <p><strong>Tempo medio di reazione:</strong> ${avgTime} ms</p>
+      `;
+    }
+  </script>
+
+</body>
+</html>
