@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Progetto Basic</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 0 15px;
+      color: #222;
+    }
+    h2 {
+      margin-top: 30px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+    label, input, button {
+      display: block;
+      margin: 10px 0 5px 0;
+    }
+    input {
+      padding: 6px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 8px 12px;
+      cursor: pointer;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    #loginMessage {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .semaforo div {
+      width: 100px;
+      height: 40px;
+      line-height: 40px;
+      margin: 5px 0;
+      color: white;
+      text-align: center;
+      opacity: 0.3;
+      border-radius: 4px;
+      transition: opacity 0.3s ease;
+      user-select: none;
+    }
+    .semaforo .rosso { background-color: red; }
+    .semaforo .giallo { background-color: goldenrod; color: black; }
+    .semaforo .verde { background-color: green; }
+    .active {
+      opacity: 1 !important;
+      box-shadow: 0 0 8px 2px rgba(0,0,0,0.3);
+    }
+    ol {
+      padding-left: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px 8px;
+      text-align: left;
+    }
+    thead {
+      background-color: #eee;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1) Login -->
+  <h2>1) Login Utente</h2>
+  <label for="username">Username:</label>
+  <input type="text" id="username" placeholder="Inserisci username" />
+  <label for="password">Password:</label>
+  <input type="password" id="password" placeholder="Inserisci password" />
+  <button id="loginBtn">Accedi</button>
+  <div id="loginMessage">Per favore, accedi.</div>
+
+  <!-- 2) Semaforo -->
+  <h2>2) Semaforo</h2>
+  <button data-color="rosso">Rosso</button>
+  <button data-color="giallo">Giallo</button>
+  <button data-color="verde">Verde</button>
+  <div class="semaforo">
+    <div id="rossoDiv" class="rosso">Stop</div>
+    <div id="gialloDiv" class="giallo">Attenzione</div>
+    <div id="verdeDiv" class="verde">Vai!</div>
+  </div>
+
+  <!-- 3) Classifica -->
+  <h2>3) Classifica Team Sportivi</h2>
+  <ol id="teamList"></ol>
+
+  <!-- 4) Catalogo Prodotti -->
+  <h2>4) Catalogo Prodotti</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nome</th>
+        <th>Prezzo (€)</th>
+      </tr>
+    </thead>
+    <tbody id="productTableBody"></tbody>
+  </table>
+
+<script>
+  // 1) Login Utente
+  let isLoggedIn = false;
+
+  const loginMessage = document.getElementById('loginMessage');
+  const loginBtn = document.getElementById('loginBtn');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+
+  function updateLoginMessage() {
+    if (isLoggedIn) {
+      loginMessage.textContent = "Benvenuto, Utente!";
+      loginMessage.style.color = "green";
+    } else {
+      loginMessage.textContent = "Per favore, accedi.";
+      loginMessage.style.color = "black";
+    }
+  }
+
+  loginBtn.addEventListener('click', () => {
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (username && password) {
+      isLoggedIn = true;
+    } else {
+      isLoggedIn = false;
+      alert("Inserisci username e password.");
+    }
+    updateLoginMessage();
+  });
+
+  updateLoginMessage();
+
+  // 2) Semaforo
+  let coloreSemaforo = 'rosso';
+
+  function updateSemaforo() {
+    ['rossoDiv', 'gialloDiv', 'verdeDiv'].forEach(id => {
+      document.getElementById(id).classList.remove('active');
+    });
+    document.getElementById(coloreSemaforo + 'Div').classList.add('active');
+  }
+
+  document.querySelectorAll('button[data-color]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      coloreSemaforo = btn.getAttribute('data-color');
+      updateSemaforo();
+    });
+  });
+
+  updateSemaforo();
+
+  // 3) Classifica
+  const teams = ['Juve', 'Inter', 'Napoli'];
+  const teamList = document.getElementById('teamList');
+  teams.forEach(team => {
+    const li = document.createElement('li');
+    li.textContent = team;
+    teamList.appendChild(li);
+  });
+
+  // 4) Catalogo Prodotti
+  const products = [
+    {id: 1, nome: "Maglia Juventus", prezzo: 110},
+    {id: 2, nome: "Scarpe da calcio", prezzo: 220},
+    {id: 3, nome: "Pallone ufficiale", prezzo: 45.5}
+  ];
+  const productTableBody = document.getElementById('productTableBody');
+
+  products.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${p.id}</td><td>${p.nome}</td><td>${p.prezzo.toFixed(2)}</td>`;
+    productTableBody.appendChild(tr);
+  });
+</script>
+
+</body>
+</html>
