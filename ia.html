@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Simulatore Scheduling CPU</title>
+<style>
+  :root{
+    --bg:#f6f8fb; --card:#ffffff; --muted:#6b7280; --accent:#0b63d8;
+    --shadow: 0 6px 18px rgba(15,23,42,0.08);
+    --mono: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  html,body{height:100%; margin:0; font-family:var(--mono); background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);}
+  .container{max-width:1100px;margin:28px auto;padding:20px;}
+  h1{margin:0 0 10px; color:#073b7a;}
+  .row{display:flex;gap:16px;flex-wrap:wrap;}
+  .card{background:var(--card);border-radius:10px;padding:14px;box-shadow:var(--shadow);}
+  .left{flex:1 1 420px;min-width:320px;}
+  .right{flex:1 1 640px;min-width:320px;}
+  label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;}
+  textarea,input,select{width:100%;box-sizing:border-box;padding:10px;border-radius:6px;border:1px solid #e6e9ef;font-size:13px;}
+  textarea{height:160px;resize:vertical;font-family:monospace;}
+  .small{width:120px;display:inline-block;margin-right:8px;}
+  .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:600;}
+  .btn.secondary{background:#1f2937;}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;}
+  .algos{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .algos label{display:inline-flex;align-items:center;gap:6px;background:#f3f4f6;padding:6px 10px;border-radius:8px;border:1px solid transparent;cursor:pointer;}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px;}
+  th,td{padding:8px;border-bottom:1px solid #eef0f3;text-align:left;}
+  th{background:#fbfdff;font-weight:700;}
+  .result-block{margin-top:12px}
+  .gantt{width:100%;height:80px;border-radius:6px;background:#fff;border:1px solid #eef0f3;overflow:hidden;position:relative}
+  .legend{font-size:12px;color:var(--muted);margin-top:6px}
+  .error{color:#b91c1c;margin-top:8px}
+  footer{margin-top:18px;font-size:13px;color:var(--muted)}
+  @media (max-width:760px){ .row{flex-direction:column;} .gantt{height:60px} }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Simulatore Scheduling CPU</h1>
+  <p style="color:var(--muted)">Incolla il JSON dei task o genera n task. Seleziona algoritmi e premi <strong>Simula</strong>.</p>
+
+  <div class="row">
+    <div class="card left">
+      <label>JSON input (es. tasks o generate_n)</label>
+      <textarea id="jsonInput" spellcheck="false">
+{
+  "tasks":[
+    {"pid":"P1","arrival":0,"burst":20},
+    {"pid":"P2","arrival":8,"burst":5},
+    {"pid":"P3","arrival":3,"burst":42},
+    {"pid":"P4","arrival":10,"burst":6},
+    {"pid":"P5","arrival":7,"burst":8}
+  ]
+}
+      </textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn" id="btnExample">Carica esempio</button>
+        <button class="btn secondary" id="btnGenerate">Genera n task</button>
+        <input id="generateN" type="number" min="1" value="8" class="small" title="n tasks">
+        <input id="seed" type="number" value="42" class="small" title="seed (opzionale)">
+      </div>
+      <div class="algos card" style="margin-top:12px;">
+        <label><input type="checkbox" value="FCFS" checked> FCFS</label>
+        <label><input type="checkbox" value="SJF" checked> SJF non-preemptive</label>
+        <label><input type="checkbox" value="SRTF" checked> SRTF (SJF preemptive)</label>
+        <label><input type="checkbox" value="RR" checked> Round-Robin</label>
+        <label style="margin-left:auto">Quantum <input id="quantum" type="number" min="1" value="4" class="small"></label>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="btnRun">Simula</button>
+        <button class="btn secondary" id="btnClear">Pulisci output</button>
+        <div style="flex:1"></div>
+      </div>
+      <div id="error" class="error" role="alert"></div>
+      <footer>Output locale — nessun dato lascia il tuo browser.</footer>
+    </div>
+
+    <div class="card right" id="resultsArea">
+      <div id="summary"></div>
+      <!-- results injected here -->
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- utilities ---------- */
+function parseJSONInput(txt){
+  try{
+    return JSON.parse(txt);
+  }catch(e){
+    throw new Error("JSON non valido: " + e.message);
+  }
+}
+function cloneTasks(list){
+  return list.map(t => ({pid: t.pid, arrival: Number(t.arrival), burst: Number(t.burst)}));
+}
+function ensureTasksFromSpec(obj){
+  if(obj.tasks && Array.isArray(obj.tasks)){
+    return obj.tasks.map(t=>({pid:String(t.pid), arrival: Number(t.arrival), burst: Number(t.burst)}));
+  }
+  if(obj.generate_n){
+    const n = Number(obj.generate_n), arrival_max = Number(obj.arrival_max||50),
+          burst_min = Number(obj.burst_min||1), burst_max = Number(obj.burst_max||20);
+    const seed = obj.seed !== undefined ? Number(obj.seed) : null;
+    let rnd = mulberry32(seed===null ? Math.floor(Math.random()*1e9) : seed);
+    let tasks = [];
+    for(let i=1;i<=n;i++){
+      tasks.push({
+        pid: "P"+i,
+        arrival: Math.floor(rnd()* (arrival_max+1)),
+        burst: Math.floor(rnd()*(burst_max - burst_min + 1)) + burst_min
+      });
+    }
+    return tasks;
+  }
+  throw new Error("JSON deve contenere 'tasks' o 'generate_n'.");
+}
+// deterministic PRNG for reproducible generation
+function mulberry32(a){
+  return function(){
+    var t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ t>>>15, t | 1);
+    t ^= t + Math.imul(t ^ t>>>7, t | 61);
+    return ((t ^ t>>>14) >>> 0) / 4294967296;
+  }
+}
+function avg(arr){ return arr.reduce((s,x)=>s+x,0)/arr.length; }
+function colorForPid(pid){
+  // simple hash to HSL
+  let h = (pid.split("").reduce((s,c)=>s + c.charCodeAt(0),0) * 37) % 360;
+  return `hsl(${h}deg 70% 60%)`;
+}
+
+/* ---------- algorithms ---------- */
+
+function simulateFCFS(tasks){
+  let tlist = cloneTasks(tasks).sort((a,b)=>a.arrival - b.arrival || a.pid.localeCompare(b.pid));
+  let time = 0; let timeline = [];
+  for(let t of tlist){
+    if(time < t.arrival) time = t.arrival;
+    let start = time;
+    time += t.burst;
+    t.completion = time;
+    t.start = start;
+    timeline.push({pid:t.pid,start, end:time});
+  }
+  return {tasks:tlist,timeline};
+}
+
+function simulateSJFNonPreemptive(tasks){
+  let rem = cloneTasks(tasks).map(x=>Object.assign({},x));
+  let time = 0, finished = [], timeline = [];
+  while(rem.length){
+    let avail = rem.filter(r=>r.arrival <= time);
+    if(avail.length === 0){
+      time = Math.min(...rem.map(r=>r.arrival));
+      avail = rem.filter(r=>r.arrival <= time);
+    }
+    avail.sort((a,b)=>a.burst - b.burst || a.arrival - b.arrival || a.pid.localeCompare(b.pid));
+    let cur = avail[0];
+    let start = time;
+    time += cur.burst;
+    cur.start = start; cur.completion = time;
+    finished.push(cur);
+    timeline.push({pid:cur.pid,start,end:time});
+    rem = rem.filter(r=>r.pid !== cur.pid);
+  }
+  return {tasks:finished,timeline};
+}
+
+function simulateSRTF(tasks){
+  // unit-time simulation
+  let tmap = cloneTasks(tasks).map(t=>({...t, remaining: t.burst, start:null, completion:null}));
+  let time = 0, completed = 0, n = tmap.length, timeline = [];
+  // for drawing contiguous intervals we will push segments when pid changes
+  let lastPid = null, segStart = null;
+  tmap.sort((a,b)=>a.arrival - b.arrival || a.pid.localeCompare(b.pid));
+  while(completed < n){
+    let avail = tmap.filter(t=>t.arrival <= time && t.remaining>0);
+    if(avail.length === 0){
+      let future = tmap.filter(t=>t.remaining>0).map(t=>t.arrival);
+      if(future.length===0) break;
+      time = Math.min(...future);
+      continue;
+    }
+    avail.sort((a,b)=>a.remaining - b.remaining || a.arrival - b.arrival || a.pid.localeCompare(b.pid));
+    let cur = avail[0];
+    if(cur.start===null) cur.start = time;
+    // run one unit
+    if(lastPid === null){ lastPid = cur.pid; segStart = time; }
+    if(lastPid !== cur.pid){
+      timeline.push({pid:lastPid, start: segStart, end: time});
+      segStart = time;
+      lastPid = cur.pid;
+    }
+    cur.remaining -= 1;
+    time += 1;
+    if(cur.remaining === 0){
+      cur.completion = time;
+      completed += 1;
+      // we'll close segment on pid change or at end loop
+    }
+  }
+  if(lastPid !== null && segStart !== null){
+    timeline.push({pid:lastPid, start: segStart, end: time});
+  }
+  return {tasks: tmap, timeline};
+}
+
+function simulateRR(tasks, quantum=4){
+  let tlist = cloneTasks(tasks).map(t=>({...t, remaining:t.burst, start:null, completion:null}));
+  let time = 0, queue = [], arrived = new Set(), timeline = [];
+  let pending = new Set(tlist.map(t=>t.pid));
+  // push arrivals at given time
+  function pushArrivalsToQueue(){
+    for(let t of tlist){
+      if(!arrived.has(t.pid) && t.arrival <= time){
+        queue.push(t);
+        arrived.add(t.pid);
+      }
+    }
+  }
+  pushArrivalsToQueue();
+  while(pending.size>0){
+    if(queue.length === 0){
+      // jump to next arrival
+      let nextArrival = Math.min(...tlist.filter(t=>!arrived.has(t.pid)).map(t=>t.arrival));
+      time = nextArrival;
+      pushArrivalsToQueue();
+      continue;
+    }
+    let cur = queue.shift();
+    if(cur.start === null) cur.start = time;
+    let run = Math.min(quantum, cur.remaining);
+    let segStart = time;
+    cur.remaining -= run;
+    time += run;
+    // during run, some tasks may arrive -> add them
+    for(let t of tlist){
+      if(!arrived.has(t.pid) && t.arrival <= time){
+        queue.push(t); arrived.add(t.pid);
+      }
+    }
+    timeline.push({pid:cur.pid,start:segStart,end:time});
+    if(cur.remaining === 0){
+      cur.completion = time;
+      pending.delete(cur.pid);
+    } else {
+      queue.push(cur);
+    }
+  }
+  return {tasks: tlist, timeline};
+}
+
+/* ---------- metrics and UI ---------- */
+
+function computeMetrics(tasks){
+  // tasks: array with pid, arrival, burst, completion
+  let res = tasks.map(t=>{
+    let completion = t.completion ?? null;
+    let turnaround = completion === null ? null : completion - t.arrival;
+    let waiting = turnaround === null ? null : turnaround - t.burst;
+    return {pid:t.pid, arrival:t.arrival, burst:t.burst, completion, turnaround, waiting};
+  });
+  return res;
+}
+
+function renderTable(metrics){
+  let html = '<table><thead><tr><th>PID</th><th>arrival</th><th>burst</th><th>completion</th><th>turnaround</th><th>waiting</th></tr></thead><tbody>';
+  for(let r of metrics){
+    html += `<tr><td>${r.pid}</td><td>${r.arrival}</td><td>${r.burst}</td><td>${r.completion===null?'-':r.completion}</td><td>${r.turnaround===null?'-':r.turnaround}</td><td>${r.waiting===null?'-':r.waiting}</td></tr>`;
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+function drawGantt(container, timeline){
+  // timeline: array {pid,start,end}
+  container.innerHTML = '';
+  if(!timeline || timeline.length===0){
+    container.innerHTML = '<div style="padding:8px;color:var(--muted)">Nessuna esecuzione</div>';
+    return;
+  }
+  let minT = Math.min(...timeline.map(s=>s.start));
+  let maxT = Math.max(...timeline.map(s=>s.end));
+  let total = Math.max(1, maxT - minT);
+  let canvas = document.createElement('div');
+  canvas.className = 'gantt';
+  canvas.style.position = 'relative';
+  canvas.style.display = 'block';
+  // create segments
+  for(let seg of timeline){
+    let segEl = document.createElement('div');
+    segEl.title = `${seg.pid}: ${seg.start} → ${seg.end}`;
+    segEl.style.position = 'absolute';
+    segEl.style.left = ((seg.start - minT)/total*100) + '%';
+    segEl.style.width = ((seg.end - seg.start)/total*100) + '%';
+    segEl.style.top = '8px';
+    segEl.style.height = '64px';
+    segEl.style.borderRadius = '6px';
+    segEl.style.background = `linear-gradient(90deg, ${colorForPid(seg.pid)}55, ${colorForPid(seg.pid)})`;
+    segEl.style.display = 'flex';
+    segEl.style.alignItems = 'center';
+    segEl.style.justifyContent = 'center';
+    segEl.style.color = '#04293a';
+    segEl.style.fontWeight = '700';
+    segEl.style.fontSize = '12px';
+    segEl.innerText = seg.pid;
+    canvas.appendChild(segEl);
+  }
+  // timeline labels (min/max)
+  let lbl = document.createElement('div'); lbl.className='legend';
+  lbl.innerHTML = `<span style="margin-right:10px">time: ${minT} — ${maxT}</span>`;
+  container.appendChild(canvas);
+  container.appendChild(lbl);
+}
+
+function formatNumber(x){ return (x===null||x===undefined) ? '-' : Number(x).toFixed(2); }
+
+/* ---------- wiring UI ---------- */
+
+const btnRun = document.getElementById('btnRun');
+const jsonInput = document.getElementById('jsonInput');
+const resultsArea = document.getElementById('resultsArea');
+const btnClear = document.getElementById('btnClear');
+const btnGenerate = document.getElementById('btnGenerate');
+const generateN = document.getElementById('generateN');
+const seedInput = document.getElementById('seed');
+const errorDiv = document.getElementById('error');
+const btnExample = document.getElementById('btnExample');
+
+btnExample.addEventListener('click', ()=>{
+  jsonInput.value = JSON.stringify({
+    tasks:[
+      {"pid":"P1","arrival":0,"burst":20},
+      {"pid":"P2","arrival":8,"burst":5},
+      {"pid":"P3","arrival":3,"burst":42},
+      {"pid":"P4","arrival":10,"burst":6},
+      {"pid":"P5","arrival":7,"burst":8}
+    ]
+  }, null, 2);
+});
+
+btnGenerate.addEventListener('click', ()=>{
+  const n = Number(generateN.value) || 8;
+  const seed = seedInput.value ? Number(seedInput.value) : null;
+  jsonInput.value = JSON.stringify({
+    generate_n: n,
+    arrival_max: 30,
+    burst_min: 1,
+    burst_max: 20,
+    seed: seed
+  }, null, 2);
+});
+
+btnClear.addEventListener('click', ()=>{
+  resultsArea.innerHTML = '';
+  errorDiv.innerText = '';
+});
+
+btnRun.addEventListener('click', ()=>{
+  errorDiv.innerText = '';
+  resultsArea.innerHTML = '<div style="color:var(--muted)">Simulazione in corso…</div>';
+  try{
+    const raw = parseJSONInput(jsonInput.value);
+    const tasks = ensureTasksFromSpec(raw);
+    // validation
+    if(!tasks || tasks.length === 0) throw new Error("Nessun task trovato.");
+    for(const t of tasks){
+      if(!t.pid || isNaN(t.arrival) || isNaN(t.burst)) throw new Error("Task malformato: pid/arrival/burst richiesti.");
+      if(t.burst < 0 || t.arrival < 0) throw new Error("arrival e burst devono essere >= 0.");
+    }
+    // read selected algos
+    const algoChecks = Array.from(document.querySelectorAll('.algos input[type="checkbox"]')).filter(c=>c.checked).map(c=>c.value);
+    const quantum = Number(document.getElementById('quantum').value) || 4;
+    if(algoChecks.length === 0) throw new Error("Seleziona almeno un algoritmo.");
+    // run each selected algorithm
+    resultsArea.innerHTML = ''; // clear
+    algoChecks.forEach(algo=>{
+      let res;
+      if(algo === 'FCFS') res = simulateFCFS(tasks);
+      else if(algo === 'SJF') res = simulateSJFNonPreemptive(tasks);
+      else if(algo === 'SRTF') res = simulateSRTF(tasks);
+      else if(algo === 'RR') res = simulateRR(tasks, quantum);
+      else return;
+      // compute metrics and render
+      const metrics = computeMetrics(res.tasks).sort((a,b)=>a.pid.localeCompare(b.pid));
+      const avgWait = metrics.filter(m=>m.waiting!=null).map(m=>m.waiting);
+      const avgTat = metrics.filter(m=>m.turnaround!=null).map(m=>m.turnaround);
+      let header = document.createElement('div');
+      header.className = 'result-block';
+      header.innerHTML = `<h3 style="margin:0 0 6px">${algo} ${algo==='RR' ? `(quantum=${quantum})` : ''}</h3>`;
+      let card = document.createElement('div'); card.className='card';
+      card.style.marginBottom = '12px';
+      card.appendChild(header);
+      let tableHtml = renderTable(metrics);
+      card.innerHTML += tableHtml;
+      card.innerHTML += `<div style="margin-top:8px;font-size:13px;color:var(--muted)">Average waiting: <strong>${avgWait.length?avg(avgWait).toFixed(2):'-'}</strong> — Average turnaround: <strong>${avgTat.length?avg(avgTat).toFixed(2):'-'}</strong></div>`;
+      // gantt
+      let ganttWrap = document.createElement('div');
+      ganttWrap.style.marginTop = '10px';
+      drawGantt(ganttWrap, res.timeline);
+      card.appendChild(ganttWrap);
+      resultsArea.appendChild(card);
+    });
+  }catch(err){
+    errorDiv.innerText = err.message;
+    resultsArea.innerHTML = '';
+  }
+});
+</script>
+</body>
+</html>
