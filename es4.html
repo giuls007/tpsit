@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vue Esercizi</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    textarea {
+      width: 100%;
+      height: 100px;
+    }
+    .errore {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Esercizio 1: Controllo Maggiore Età -->
+    <h2>Esercizio 1: Controllo Maggiore Età</h2>
+    <input type="number" v-model.number="eta" placeholder="Inserisci la tua età" />
+    <p>{{ messaggioEta }}</p>
+
+    <!-- Esercizio 2: Carrello Semplice -->
+    <h2>Esercizio 2: Carrello Semplice</h2>
+    <ul>
+      <li v-for="(prodotto, index) in carrello" :key="index">
+        {{ prodotto.nome }} - €{{ prodotto.prezzo.toFixed(2) }}
+      </li>
+    </ul>
+    <p>Totale carrello: €{{ totaleCarrello.toFixed(2) }}</p>
+
+    <!-- Esercizio 3: Validazione Username -->
+    <h2>Esercizio 3: Validazione Username</h2>
+    <input v-model="username" placeholder="Inserisci username" />
+    <p v-if="erroreUsername" class="errore">{{ erroreUsername }}</p>
+
+    <!-- Esercizio 4: Salvataggio Automatico -->
+    <h2>Esercizio 4: Salvataggio Automatico</h2>
+    <textarea v-model="testoNote" placeholder="Scrivi qualcosa..."></textarea>
+    <p>{{ statoSalvataggio }}</p>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, watch } = Vue
+
+    createApp({
+      setup() {
+        // Esercizio 1
+        const eta = ref(0)
+        const messaggioEta = computed(() => {
+          return eta.value >= 18 ? 'Maggiorenne' : 'Minorenne'
+        })
+
+        // Esercizio 2
+        const carrello = ref([
+          { nome: 'Libro', prezzo: 12.5 },
+          { nome: 'Penna', prezzo: 1.75 },
+          { nome: 'Quaderno', prezzo: 3.2 }
+        ])
+        const totaleCarrello = computed(() =>
+          carrello.value.reduce((totale, prod) => totale + prod.prezzo, 0)
+        )
+
+        // Esercizio 3
+        const username = ref('')
+        const erroreUsername = ref('')
+        watch(username, (val) => {
+          erroreUsername.value = val.length < 5 ? 'Username troppo corto' : ''
+        })
+
+        // Esercizio 4
+        const testoNote = ref('')
+        const statoSalvataggio = ref('')
+        let timeoutId = null
+
+        watch(testoNote, () => {
+          statoSalvataggio.value = 'Sto salvando...'
+          if (timeoutId) clearTimeout(timeoutId)
+          timeoutId = setTimeout(() => {
+            statoSalvataggio.value = 'Salvato!'
+          }, 1000)
+        })
+
+        return {
+          eta,
+          messaggioEta,
+          carrello,
+          totaleCarrello,
+          username,
+          erroreUsername,
+          testoNote,
+          statoSalvataggio
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>
