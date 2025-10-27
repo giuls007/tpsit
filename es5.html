@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Esercizi JS + CSS</title>
+  <style>
+    /* Stili generali */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    section {
+      margin-bottom: 40px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    /* Esercizio 1: Stato del Messaggio */
+    .message {
+      padding: 10px;
+      color: white;
+      margin: 10px 0;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .success {
+      background-color: green;
+    }
+    .error {
+      background-color: red;
+    }
+
+    /* Esercizio 2: Avatar */
+    .avatar {
+      display: inline-block;
+      border-radius: 50%;
+      margin-top: 10px;
+      border: 2px solid #555;
+    }
+
+    /* Esercizio 3 e 4: componenti base */
+    .saluto-utente {
+      background-color: #e3f2fd;
+      border: 1px solid #90caf9;
+      padding: 10px;
+      border-radius: 4px;
+      text-align: center;
+      margin: 5px 0;
+    }
+
+    .info-card {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 15px;
+      width: 200px;
+      background-color: #f9f9f9;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+    
+  <section id="es1">
+    <h2>Stato del Messaggio</h2>
+    <div id="message" class="message">Questo è un messaggio</div>
+    <button id="btnSuccess">Imposta come Successo</button>
+    <button id="btnError">Imposta come Errore</button>
+  </section>
+
+  <section id="es2">
+    <h2>Avatar Personalizzabile</h2>
+    <label>Larghezza (px): <input type="number" id="widthInput" value="100"></label><br>
+    <label>Altezza (px): <input type="number" id="heightInput" value="100"></label><br>
+    <label>Colore di sfondo: <input type="color" id="colorInput" value="#ff9900"></label><br>
+    <div id="avatar" class="avatar"></div>
+  </section>
+
+  <section id="es3">
+    <h2>Saluto Personale</h2>
+    <div class="saluto-utente">Benvenuto nella nostra applicazione!</div>
+    <div class="saluto-utente">Benvenuto nella nostra applicazione!</div>
+  </section>
+
+  <section id="es4">
+    <h2>Card Semplice</h2>
+    <div class="info-card">
+      <h3>Titolo della Card</h3>
+      <p>Contenuto della card</p>
+    </div>
+  </section>
+
+  <script>
+    // Esercizio 1
+    const messageDiv = document.getElementById('message');
+    const btnSuccess = document.getElementById('btnSuccess');
+    const btnError = document.getElementById('btnError');
+
+    btnSuccess.addEventListener('click', () => {
+      messageDiv.classList.remove('error');
+      messageDiv.classList.add('success');
+      messageDiv.textContent = 'Operazione completata con successo!';
+    });
+
+    btnError.addEventListener('click', () => {
+      messageDiv.classList.remove('success');
+      messageDiv.classList.add('error');
+      messageDiv.textContent = 'Si è verificato un errore!';
+    });
+
+    // Esercizio 2 
+    const avatar = document.getElementById('avatar');
+    const widthInput = document.getElementById('widthInput');
+    const heightInput = document.getElementById('heightInput');
+    const colorInput = document.getElementById('colorInput');
+
+    function updateAvatar() {
+      avatar.style.width = widthInput.value + 'px';
+      avatar.style.height = heightInput.value + 'px';
+      avatar.style.backgroundColor = colorInput.value;
+    }
+
+    widthInput.addEventListener('input', updateAvatar);
+    heightInput.addEventListener('input', updateAvatar);
+    colorInput.addEventListener('input', updateAvatar);
+
+    // Inizializza
+    updateAvatar();
+  </script>
+</body>
+</html>
