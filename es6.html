@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Esercizi Vue - Props ed Eventi</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      color: #333;
+    }
+    section { margin-bottom: 2rem; }
+    .product-list { display: flex; gap: 1rem; }
+    .product-card { border: 1px solid #ccc; padding: 1rem; border-radius: 6px; width: 180px; text-align: center; }
+    .alert-box { padding: 1rem; border-radius: 4px; color: white; margin: 0.5rem 0; font-weight: bold; }
+    .alert-box.success { background-color: #4caf50; }
+    .alert-box.error { background-color: #f44336; }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); }
+    .modal-content { background: white; padding: 1.5rem; border-radius: 8px; text-align: center; width: 300px; }
+    .star-rating button { background: none; border: none; font-size: 2rem; cursor: pointer; color: #ccc; transition: color 0.2s; }
+    .star-rating button.attiva { color: gold; }
+    .star-rating button:hover { color: orange; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <section>
+      <h2>Esercizio 1 - Card Prodotto</h2>
+      <div class="product-list">
+        <product-card
+          v-for="(p, i) in prodotti"
+          :key="i"
+          :nomeProdotto="p.nome"
+          :prezzo="p.prezzo"
+        ></product-card>
+      </div>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Esercizio 2 - Alert Box</h2>
+      <alert-box tipo="success" messaggio="Operazione completata con successo!"></alert-box>
+      <alert-box tipo="error" messaggio="Si è verificato un errore!"></alert-box>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Esercizio 3 - Chiudi Modale</h2>
+      <button @click="modaleAperta = true">Apri Modale</button>
+      <modal-dialog v-if="modaleAperta" @chiudi="modaleAperta = false"></modal-dialog>
+    </section>
+
+    <hr>
+
+    <section>
+      <h2>Esercizio 4 - Valutazione a Stelle</h2>
+      <star-rating @imposta-valutazione="valutazione = $event"></star-rating>
+      <p>Valutazione scelta: {{ valutazione }}</p>
+    </section>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    const app = createApp({
+      data() {
+        return {
+          prodotti: [
+            { nome: "Laptop", prezzo: 999.99 },
+            { nome: "Smartphone", prezzo: 699.49 },
+            { nome: "Cuffie Bluetooth", prezzo: 149.90 },
+          ],
+          modaleAperta: false,
+          valutazione: 0,
+        };
+      },
+    });
+
+    app.component("product-card", {
+      props: ["nomeProdotto", "prezzo"],
+      template: `
+        <div class="product-card">
+          <h3>{{ nomeProdotto }}</h3>
+          <p>Prezzo: € {{ prezzo.toFixed(2) }}</p>
+        </div>
+      `
+    });
+
+    app.component("alert-box", {
+      props: ["messaggio", "tipo"],
+      template: `<div :class="['alert-box', tipo]">{{ messaggio }}</div>`
+    });
+
+    app.component("modal-dialog", {
+      emits: ["chiudi"],
+      template: `
+        <div class="modal">
+          <div class="modal-content">
+            <h3>Modale Aperta</h3>
+            <p>Questa è una finestra modale.</p>
+            <button @click="$emit('chiudi')">Chiudi</button>
+          </div>
+        </div>
+      `
+    });
+
+    app.component("star-rating", {
+      emits: ["imposta-valutazione"],
+      data() {
+        return { stelle: 5, selezionata: 0 };
+      },
+      methods: {
+        scegli(n) {
+          this.selezionata = n;
+          this.$emit("imposta-valutazione", n);
+        }
+      },
+      template: `
+        <div class="star-rating">
+          <button
+            v-for="n in stelle"
+            :key="n"
+            @click="scegli(n)"
+            :class="{ attiva: n <= selezionata }"
+          >★</button>
+        </div>
+      `
+    });
+
+    app.mount("#app");
+  </script>
+</body>
+</html>
