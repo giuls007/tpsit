@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Post App</title>
+
+<style>
+body { font-family: Arial; margin: 20px; }
+button { padding: 8px 12px; margin: 5px 0; cursor: pointer; }
+input, textarea { display: block; margin: 8px 0; padding: 6px; width: 300px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px; }
+.card { border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+img { width: 100%; border-radius: 8px; }
+.single-img { max-width: 400px; }
+.nav { margin-bottom: 20px; }
+</style>
+
+</head>
+<body>
+
+<h1>Post App</h1>
+
+<div class="nav">
+  <a href="/"><button>Tutti i Post</button></a>
+  <a href="/?view=create"><button>Crea Post</button></a>
+</div>
+
+<% if (view === "create") { %>
+
+  <h2>Crea Post</h2>
+
+  <form action="/posts" method="POST" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Titolo" required>
+    <textarea name="description" placeholder="Descrizione" required></textarea>
+    <input type="text" name="extraInfo" placeholder="Info extra">
+    <input type="file" name="image">
+    <button type="submit">Salva</button>
+  </form>
+
+<% } else if (view === "show") { %>
+
+  <h2><%= post.title %></h2>
+
+  <% if (post.image) { %>
+    <img src="<%= post.image %>" class="single-img">
+  <% } %>
+
+  <p><%= post.description %></p>
+  <p><strong>Extra:</strong> <%= post.extraInfo || "" %></p>
+
+  <a href="/"><button>Indietro</button></a>
+
+<% } else { %>
+
+  <h2>Tutti i Post</h2>
+
+  <div class="grid">
+    <% posts.forEach(post => { %>
+      <div class="card">
+
+        <% if (post.image) { %>
+          <img src="<%= post.image %>">
+        <% } %>
+
+        <h3><%= post.title %></h3>
+        <p><%= post.description %></p>
+
+        <a href="/posts/<%= post.id %>">
+          <button>Dettagli</button>
+        </a>
+
+        <form action="/posts/<%= post.id %>/delete" method="POST">
+          <button type="submit">Elimina</button>
+        </form>
+
+      </div>
+    <% }) %>
+  </div>
+
+<% } %>
+
+</body>
+</html>
